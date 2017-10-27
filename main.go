@@ -14,8 +14,15 @@
 
 package main
 
-import "github.com/HinanawiTenshi/Agenda/cmd"
+import (
+	"os"
+
+	"github.com/HinanawiTenshi/Agenda/cmd"
+	"github.com/HinanawiTenshi/Agenda/util"
+)
 
 func main() {
 	cmd.Execute()
+	os.OpenFile(util.UserPath, os.O_CREATE, 0755)
+	os.OpenFile(util.MeetingPath, os.O_CREATE, 0755)
 }
