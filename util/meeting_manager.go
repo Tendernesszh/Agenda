@@ -19,7 +19,7 @@ var (
 )
 
 func init() {
-	file, err := os.OpenFile(MeetingPath, os.O_RDONLY, 0755)
+	file, err := os.OpenFile(MeetingPath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -37,7 +37,7 @@ func init() {
 }
 
 func AddOneMeeting(m Meeting) {
-	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, 0755)
+	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -52,4 +52,13 @@ func AddOneMeeting(m Meeting) {
 
 func GetMeetings() []Meeting {
 	return meetingList
+}
+
+func (m *Meeting) HasUser(username string) bool {
+	for _, member := range m.Members {
+		if member.Username == username {
+			return true
+		}
+	}
+	return false
 }

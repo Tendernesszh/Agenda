@@ -23,7 +23,7 @@ var (
 )
 
 func init() {
-	file, err := os.OpenFile(UserPath, os.O_RDONLY, 0755)
+	file, err := os.OpenFile(UserPath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -45,5 +45,16 @@ func GetUsers() []User {
 }
 
 func AddOneUser(u User) {
-	// TODO: Add one user to the json file.
+	// Add one user to the json file.
+	file, err := os.OpenFile(UserPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	jsonEncoder := json.NewEncoder(file)
+	encodeErr := jsonEncoder.Encode(&u)
+	if encodeErr != nil {
+		fmt.Println(encodeErr)
+		return
+	}
 }

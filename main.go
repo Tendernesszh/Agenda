@@ -22,7 +22,10 @@ import (
 )
 
 func main() {
+	// Create data files if needed
+	os.OpenFile(util.UserPath, os.O_CREATE, os.ModePerm)
+	os.OpenFile(util.MeetingPath, os.O_CREATE, os.ModePerm)
+	os.OpenFile(cmd.CurUserPath, os.O_CREATE, os.ModePerm)
+
 	cmd.Execute()
-	os.OpenFile(util.UserPath, os.O_CREATE, 0755)
-	os.OpenFile(util.MeetingPath, os.O_CREATE, 0755)
 }
