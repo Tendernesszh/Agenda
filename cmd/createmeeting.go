@@ -22,66 +22,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const timeForm = "2006/01/02/15:04"
-
-// Flags
-var (
-	title     string
-	members   []string
-	starttime string
-	endtime   string
-)
-
-// ERROR
-type argsError struct {
-	invalidNArgs    bool
-	invalidArgs     string
-	duplicatedTitle string
-	unknownUser     string
-	busyMembers     []string
-}
-
-func (e argsError) Error() string {
-	var result string
-	if e.invalidNArgs {
-		result += "[ERROR]Arguments not fit"
-	}
-	if e.invalidArgs != "" {
-		result += fmt.Sprintf("[ERROR]Invalid %v", e.invalidArgs)
-	}
-	if e.duplicatedTitle != "" {
-		result +=
-			fmt.Sprintf("[ERROR]\"%v\" already existed", e.duplicatedTitle)
-	}
-	if e.unknownUser != "" {
-		result += fmt.Sprintf("[ERROR]Unknown user %v", e.unknownUser)
-	}
-	if len(e.busyMembers) > 0 {
-		busy := `[ERROR]The following members are busy during
-            the time\n`
-		for busyMem := range e.busyMembers {
-			if busyMem == len(e.busyMembers)-1 {
-				busy += e.busyMembers[busyMem]
-			} else {
-				busy += e.busyMembers[busyMem] + " "
-			}
-		}
-		result += busy
-	}
-	return result
-}
-
 func init() {
 	RootCmd.AddCommand(createmeetingCmd)
 
 	// Initialize the flags
-	createmeetingCmd.Flags().StringVarP(&title, "title", "t", "",
+	createmeetingCmd.Flags().StringVarP(&_title, "title", "t", "",
 		"Specify the title of the meeting need to be created.")
-	createmeetingCmd.Flags().StringSliceVarP(&members, "members", "m",
+	createmeetingCmd.Flags().StringSliceVarP(&_members, "members", "m",
 		make([]string, 20), "Specify the members to attend the meeting.")
-	createmeetingCmd.Flags().StringVarP(&starttime, "starttime", "s", "",
+	createmeetingCmd.Flags().StringVarP(&_starttime, "starttime", "s", "",
 		"Specify the start time of the meeting in format yyyy/mm/dd/hh:mm")
-	createmeetingCmd.Flags().StringVarP(&endtime, "endtimeStr", "e", "",
+	createmeetingCmd.Flags().StringVarP(&_endtime, "endtimeStr", "e", "",
 		"Specify the end time of the meeting in format yyyy/mm/dd/hh:mm")
 }
 
@@ -101,34 +52,35 @@ you, is busy during the time, the meeting cannot be created.`,
 			fmt.Println(err)
 			return
 		}
-		memberList := make([]util.SimpleUser, len(members))
+		memberList := make([]util.SimpleUser, len(_members))
 		for i := range memberList {
-			memberList[i].Username = members[i]
+			memberList[i].Username = _members[i]
 		}
 		util.AddOneMeeting(
-			util.Meeting{Title: title, Members: memberList,
-				Starttime: starttime, Endtime: endtime})
-		fmt.Printf("[SUCCESS]Meeting \"%v\" created\n", title)
+			util.Meeting{Title: _title, Members: memberList,
+				Starttime: _starttime, Endtime: _endtime})
+		fmt.Printf("[SUCCESS]Meeting \"%v\" created\n", _title)
 	},
 }
 
 func argsCheck(cmd *cobra.Command) error {
+	users := util.GetUsers()
+	meetings := util.GetMeetings()
+
 	// Check for the number of arguments
 	if cmd.Flags().NFlag() != 4 {
 		return argsError{invalidNArgs: true}
 	}
 
 	// Check for duplicated title
-	meetings := util.GetMeetings()
 	for _, meeting := range meetings {
-		if meeting.Title == title {
-			return argsError{duplicatedTitle: title}
+		if meeting.Title == _title {
+			return argsError{duplicatedTitle: _title}
 		}
 	}
 
 	// Check for members that haven't registerred yet.
-	users := util.GetUsers()
-	for _, member := range members {
+	for _, member := range _members {
 		exist := false
 		for _, user := range users {
 			if user.Username == member {
@@ -142,8 +94,8 @@ func argsCheck(cmd *cobra.Command) error {
 	}
 
 	// Check for time
-	st, errSt := time.Parse(timeForm, starttime)
-	et, errEt := time.Parse(timeForm, endtime)
+	st, errSt := time.Parse(timeForm, _starttime)
+	et, errEt := time.Parse(timeForm, _endtime)
 	if errSt != nil {
 		return argsError{invalidArgs: "start time"}
 	}
@@ -154,7 +106,25 @@ func argsCheck(cmd *cobra.Command) error {
 		return argsError{invalidArgs: "duration"}
 	}
 
-	// TODO: Check for busy members
+	// Check for busy members
+	var busyMembers []string
+	someoneBusy := false
+	for _, user := range users {
+		for _, meeting := range meetings {
+			if meeting.HasUser(user.Username) {
+				mSt, _ := time.Parse(timeForm, meeting.Starttime)
+				mEt, _ := time.Parse(timeForm, meeting.Endtime)
+				if !(mEt.Before(st) || mSt.After(et)) {
+					busyMembers = append(busyMembers, user.Username)
+					someoneBusy = true
+					break
+				}
+			}
+		}
+	}
+	if someoneBusy {
+		return argsError{busyMembers: busyMembers}
+	}
 
 	return nil
 }
