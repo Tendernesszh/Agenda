@@ -48,26 +48,26 @@ Command 4 to 13 are login only.
     - `-t`, `--title`
     - `-m`, `--member`
 
-10. `meeting <starttime> <endtime>`
+9. `meeting <starttime> <endtime>`
 
     Query meetings which have connection to the user between the time interval.
 
     - `-s`, `--starttime`
     - `-e`, `--endtime`
 
-11. `removemeeting <title>`
+10. `removemeeting <title>`
 
     Remove a meeting created by the user.
 
     - `-t`, `--title`
 
-12. `quitmeeting <title>`
+11. `quitmeeting <title>`
 
     Quit a meeting participated by the user.
 
     - `-t`, `--title`
 
-13. `clearmeeting`
+12. `clearmeeting`
 
     Clear all meetings created by the user.
 
