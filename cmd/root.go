@@ -23,7 +23,65 @@ import (
 	"github.com/spf13/viper"
 )
 
+const timeForm = "2006/01/02/15:04"
+
 var cfgFile string
+
+// Flags
+var (
+	_title      string
+	_members    []string
+	_member     string
+	_starttime  string
+	_endtime    string
+	_addFlag    bool
+	_removeFlag bool
+)
+
+// Current user's information(username)
+const CurUserPath = "data/curUser.txt"
+
+// Current User
+var _username string
+
+// ERROR
+type argsError struct {
+	invalidNArgs    bool
+	invalidArgs     string
+	duplicatedTitle string
+	unknownUser     string
+	busyMembers     []string
+}
+
+func (e argsError) Error() string {
+	var result string
+	if e.invalidNArgs {
+		result += "[ERROR]Arguments not fit"
+	}
+	if e.invalidArgs != "" {
+		result += fmt.Sprintf("[ERROR]Invalid %v", e.invalidArgs)
+	}
+	if e.duplicatedTitle != "" {
+		result +=
+			fmt.Sprintf("[ERROR]\"%v\" already existed", e.duplicatedTitle)
+	}
+	if e.unknownUser != "" {
+		result += fmt.Sprintf("[ERROR]Unknown user %v", e.unknownUser)
+	}
+	if len(e.busyMembers) > 0 {
+		busy := `[ERROR]The following members are busy during
+            the time\n`
+		for busyMem := range e.busyMembers {
+			if busyMem == len(e.busyMembers)-1 {
+				busy += e.busyMembers[busyMem]
+			} else {
+				busy += e.busyMembers[busyMem] + " "
+			}
+		}
+		result += busy
+	}
+	return result
+}
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
