@@ -55,21 +55,13 @@ Command 4 to 13 are login only.
     - `-s`, `--starttime`
     - `-e`, `--endtime`
 
-<<<<<<< HEAD
-10. `removemeeting <title>`
-=======
-11. `removemeeting <title>` implementing
->>>>>>> 6383bbafa1cc3be7b088248a2935244b084b5efc
+10. `removemeeting <title>` implementing
 
     Remove a meeting created by the user.
 
     - `-t`, `--title`
 
-<<<<<<< HEAD
-11. `quitmeeting <title>`
-=======
-12. `quitmeeting <title>` finished
->>>>>>> 6383bbafa1cc3be7b088248a2935244b084b5efc
+11. `quitmeeting <title>` finished
 
     Quit a meeting participated by the user.
 
