@@ -31,7 +31,7 @@ Command 4 to 13 are login only.
 
     Destroy current account.
 
-7. `createmeeting <title> <member0 ... memberN> <starttime> <endtime>`
+7. `createmeeting <title> <member0 ... memberN> <starttime> <endtime>` --- Finished
 
     Create a meeting.
 
@@ -48,7 +48,7 @@ Command 4 to 13 are login only.
     - `-t`, `--title`
     - `-m`, `--member`
 
-9. `meeting <starttime> <endtime>`
+9. `meeting <starttime> <endtime>` --- Finished
 
     Query meetings which have connection to the user between the time interval.
 
