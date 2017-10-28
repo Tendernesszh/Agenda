@@ -37,6 +37,27 @@ func init() {
 	}
 }
 
+func UpdateMeeting(meetings []Meeting) {
+
+	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	os.Truncate(MeetingPath, 0)
+	defer file.Close()
+
+	jsonEncoder := json.NewEncoder(file)
+	for _, m := range meetings {
+		encodeErr := jsonEncoder.Encode(&m)
+		if encodeErr != nil {
+			fmt.Println(encodeErr)
+			return
+		}
+	}
+
+}
+
 func AddOneMeeting(m Meeting) {
 	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {

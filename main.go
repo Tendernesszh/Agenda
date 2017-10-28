@@ -17,14 +17,14 @@ package main
 import (
 	"os"
 
-	"github.com/HinanawiTenshi/Agenda/cmd"
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/JasonZang1005/Agenda/cmd"
 )
 
 func main() {
 	// Create data files if needed
-	os.OpenFile(util.UserPath, os.O_CREATE, os.ModePerm)
-	os.OpenFile(util.MeetingPath, os.O_CREATE, os.ModePerm)
+	os.MkdirAll("./data",0777);
+	os.OpenFile(cmd.UserPath, os.O_CREATE, os.ModePerm)
+	os.OpenFile(cmd.MeetingPath, os.O_CREATE, os.ModePerm)
 	os.OpenFile(cmd.CurUserPath, os.O_CREATE, os.ModePerm)
 
 	cmd.Execute()
