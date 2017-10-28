@@ -8,6 +8,7 @@ import (
 
 type Meeting struct {
 	Title     string       `json:"title"`
+	Host      string       `json:"host"`
 	Members   []SimpleUser `json:"members"`
 	Starttime string       `json:"start_time"`
 	Endtime   string       `json:"end_time"`
@@ -55,10 +56,19 @@ func GetMeetings() []Meeting {
 }
 
 func (m *Meeting) HasUser(username string) bool {
-	for _, member := range m.Members {
-		if member.Username == username {
-			return true
+	if m.Host == username {
+		return true
+	} else {
+		for _, member := range m.Members {
+			if member.Username == username {
+				return true
+			}
 		}
 	}
 	return false
+}
+
+func PrintOneMeeting(m Meeting) {
+	fmt.Printf("%v\t%v\t%v\t%v\t%v\n", m.Title, m.Starttime, m.Endtime,
+		m.Host, m.Members)
 }
