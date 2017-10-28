@@ -29,7 +29,7 @@ func init() {
 	createmeetingCmd.Flags().StringVarP(&_title, "title", "t", "",
 		"Specify the title of the meeting need to be created.")
 	createmeetingCmd.Flags().StringSliceVarP(&_members, "members", "m",
-		make([]string, 20), "Specify the members to attend the meeting.")
+		make([]string, 0), "Specify the members to attend the meeting.")
 	createmeetingCmd.Flags().StringVarP(&_starttime, "starttime", "s", "",
 		"Specify the start time of the meeting in format yyyy/mm/dd/hh:mm")
 	createmeetingCmd.Flags().StringVarP(&_endtime, "endtimeStr", "e", "",
