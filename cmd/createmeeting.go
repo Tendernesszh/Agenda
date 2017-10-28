@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HinanawiTenshi/Agenda/util"
 	"github.com/spf13/cobra"
 )
 
@@ -52,20 +51,20 @@ you, is busy during the time, the meeting cannot be created.`,
 			fmt.Println(err)
 			return
 		}
-		memberList := make([]util.SimpleUser, len(_members))
+		memberList := make([]SimpleUser, len(_members))
 		for i := range memberList {
 			memberList[i].Username = _members[i]
 		}
-		util.AddOneMeeting(
-			util.Meeting{Title: _title, Members: memberList,
+		AddOneMeeting(
+			Meeting{Title: _title, Members: memberList,
 				Starttime: _starttime, Endtime: _endtime})
 		fmt.Printf("[SUCCESS]Meeting \"%v\" created\n", _title)
 	},
 }
 
 func argsCheck(cmd *cobra.Command) error {
-	users := util.GetUsers()
-	meetings := util.GetMeetings()
+	users := GetUsers()
+	meetings := GetMeetings()
 
 	// Check for the number of arguments
 	if cmd.Flags().NFlag() != 4 {
