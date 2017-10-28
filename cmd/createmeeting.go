@@ -48,7 +48,7 @@ you, is busy during the time, the meeting cannot be created.`,
 			cmd.Help()
 			return
 		}
-		if err := argsCheck(cmd); err != nil {
+		if err := meetingArgsCheck(cmd); err != nil {
 			fmt.Println(err)
 			return
 		}
@@ -56,14 +56,15 @@ you, is busy during the time, the meeting cannot be created.`,
 		for i := range memberList {
 			memberList[i].Username = _members[i]
 		}
+		curUser, _ := getCurUser()
 		util.AddOneMeeting(
-			util.Meeting{Title: _title, Members: memberList,
+			util.Meeting{Title: _title, Members: memberList, Host: curUser,
 				Starttime: _starttime, Endtime: _endtime})
 		fmt.Printf("[SUCCESS]Meeting \"%v\" created\n", _title)
 	},
 }
 
-func argsCheck(cmd *cobra.Command) error {
+func meetingArgsCheck(cmd *cobra.Command) error {
 	users := util.GetUsers()
 	meetings := util.GetMeetings()
 
@@ -94,26 +95,20 @@ func argsCheck(cmd *cobra.Command) error {
 	}
 
 	// Check for time
-	st, errSt := time.Parse(timeForm, _starttime)
-	et, errEt := time.Parse(timeForm, _endtime)
-	if errSt != nil {
-		return argsError{invalidArgs: "start time"}
-	}
-	if errEt != nil {
-		return argsError{invalidArgs: "end Time"}
-	}
-	if st.After(et) || st.Equal(et) {
-		return argsError{invalidArgs: "duration"}
+	if timeErr := timeIntervalCheck(); timeErr != nil {
+		return timeErr
 	}
 
 	// Check for busy members
 	var busyMembers []string
+	st, _ := time.Parse(TIME_FORM, _starttime)
+	et, _ := time.Parse(TIME_FORM, _endtime)
 	someoneBusy := false
 	for _, user := range users {
 		for _, meeting := range meetings {
 			if meeting.HasUser(user.Username) {
-				mSt, _ := time.Parse(timeForm, meeting.Starttime)
-				mEt, _ := time.Parse(timeForm, meeting.Endtime)
+				mSt, _ := time.Parse(TIME_FORM, meeting.Starttime)
+				mEt, _ := time.Parse(TIME_FORM, meeting.Endtime)
 				if !(mEt.Before(st) || mSt.After(et)) {
 					busyMembers = append(busyMembers, user.Username)
 					someoneBusy = true
