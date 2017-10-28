@@ -38,7 +38,6 @@ func init() {
 }
 
 func UpdateMeeting(meetings []Meeting) {
-
 	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
@@ -74,6 +73,15 @@ func AddOneMeeting(m Meeting) {
 
 func GetMeetings() []Meeting {
 	return meetingList
+}
+
+func GetMeeting(title string) Meeting {
+	for _, meeting := range meetingList {
+		if meeting.Title == title {
+			return meeting
+		}
+	}
+	return Meeting{}
 }
 
 func (m *Meeting) HasUser(username string) bool {
