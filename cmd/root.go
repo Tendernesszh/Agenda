@@ -17,13 +17,14 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-const timeForm = "2006/01/02/15:04"
+const TIME_FORM = "2006/01/02/15:04"
 
 var cfgFile string
 
@@ -39,10 +40,7 @@ var (
 )
 
 // Current user's information(username)
-const CurUserPath = "data/curUser.txt"
-
-// Current User
-var _username string
+const CURUSER_PATH = "data/curUser.txt"
 
 // ERROR
 type argsError struct {
@@ -81,6 +79,40 @@ func (e argsError) Error() string {
 		result += busy
 	}
 	return result
+}
+
+func timeIntervalCheck() error {
+	st, errSt := time.Parse(TIME_FORM, _starttime)
+	et, errEt := time.Parse(TIME_FORM, _endtime)
+	if errSt != nil {
+		return argsError{invalidArgs: "start time"}
+	}
+	if errEt != nil {
+		return argsError{invalidArgs: "end Time"}
+	}
+	if st.After(et) || st.Equal(et) {
+		return argsError{invalidArgs: "duration"}
+	}
+	return nil
+}
+
+func getCurUser() (string, error) {
+	file, err := os.OpenFile(CURUSER_PATH, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		return "", err
+	}
+	name := make([]byte, 0, 255)
+	file.Read(name)
+	return string(name), nil
+}
+
+func setCurUser(username string) error {
+	file, err := os.OpenFile(CURUSER_PATH, os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		return err
+	}
+	file.Write([]byte(username))
+	return nil
 }
 
 // RootCmd represents the base command when called without any subcommands
