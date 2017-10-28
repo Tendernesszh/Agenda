@@ -47,8 +47,11 @@ type argsError struct {
 	invalidNArgs    bool
 	invalidArgs     string
 	duplicatedTitle string
+	duplicatedUser  string
+	unknownTitle    string
 	unknownUser     string
 	busyMembers     []string
+	permissionDeny  bool
 }
 
 func (e argsError) Error() string {
@@ -61,7 +64,15 @@ func (e argsError) Error() string {
 	}
 	if e.duplicatedTitle != "" {
 		result +=
-			fmt.Sprintf("[ERROR]\"%v\" already existed", e.duplicatedTitle)
+			fmt.Sprintf("[ERROR]Meeting \"%v\" already existed", e.duplicatedTitle)
+	}
+	if e.duplicatedUser != "" {
+		result +=
+			fmt.Sprintf("[ERROR]Member \"%v\" already existed", e.duplicatedUser)
+	}
+	if e.unknownTitle != "" {
+		result +=
+			fmt.Sprintf("[ERROR]Meeting \"%v\" not found", e.unknownTitle)
 	}
 	if e.unknownUser != "" {
 		result += fmt.Sprintf("[ERROR]Unknown user %v", e.unknownUser)
@@ -77,6 +88,9 @@ func (e argsError) Error() string {
 			}
 		}
 		result += busy
+	}
+	if e.permissionDeny {
+		result += "[ERROR]Permission Denied"
 	}
 	return result
 }
