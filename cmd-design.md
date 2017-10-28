@@ -25,11 +25,11 @@ Command 4 to 13 are login only.
 
 5. `users`
 
-    List all exist users.
+    List all exist users. finished
 
 6. `destroy`
 
-    Destroy current account.
+    Destroy current account. implementing
 
 7. `createmeeting <title> <member0 ... memberN> <starttime> <endtime>` --- Finished
 
@@ -55,13 +55,21 @@ Command 4 to 13 are login only.
     - `-s`, `--starttime`
     - `-e`, `--endtime`
 
+<<<<<<< HEAD
 10. `removemeeting <title>`
+=======
+11. `removemeeting <title>` implementing
+>>>>>>> 6383bbafa1cc3be7b088248a2935244b084b5efc
 
     Remove a meeting created by the user.
 
     - `-t`, `--title`
 
+<<<<<<< HEAD
 11. `quitmeeting <title>`
+=======
+12. `quitmeeting <title>` finished
+>>>>>>> 6383bbafa1cc3be7b088248a2935244b084b5efc
 
     Quit a meeting participated by the user.
 
