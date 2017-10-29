@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/Tendernesszh/Agenda/util"
 	"github.com/spf13/cobra"
 )
 

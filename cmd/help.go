@@ -17,15 +17,12 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Tendernesszh/Agenda/util"
 	"github.com/spf13/cobra"
 )
 
-var title string
-
-// quitmeetingCmd represents the quitmeeting command
-var quitmeetingCmd = &cobra.Command{
-	Use:   "quitmeeting",
+// helpCmd represents the help command
+var helpCmd = &cobra.Command{
+	Use:   "help",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
@@ -34,30 +31,74 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		AllMeeting := util.GetMeetings()
-		for _, meeting := range AllMeeting {
-			for j, particapator := range meeting.Members {
-				if curUser, _ := getCurUser(); particapator.Username == curUser {
-					meeting.Members = append(meeting.Members[:j], meeting.Members[j+1:]...)
-				}
+		if len(args) != 1 {
+			fmt.Println("Command input error")
+		} else if len(args) == 0 {
+			RootCmd.Help()
+		} else {
+			flag := 0
+			if args[0] == "createmeeting" {
+				flag := 1
+				createmeetingCmd.Help()
+			}
+			if args[0] == "meeting" {
+				flag := 1
+				meetingCmd.Help()
+			}
+			if args[0] == "modifymemeber" {
+				flag := 1
+				modifymemeberCmd.Help()
+			}
+			if args[0] == "register" {
+				flag := 1
+			  registerCmd.Help()
+			}
+			if args[0] == "login" {
+				flag := 1
+				loginCmd.Help()
+			}
+			if args[0] == "logout" {
+				flag := 1
+				logoutCmd.Help()
+			}
+			if args[0] == "users" {
+				flag := 1
+				usersCmd.Help()
+			}
+			if args[0] == "destroy" {
+				flag := 1
+				destroyCmd.Help()
+			}
+			if args[0] == "removemeeting" {
+				flag := 1
+				removemeetingCmd.Help()
+			}
+			if args[0] == "quitmeeting" {
+				flag := 1
+				quitmeetingCmd.Help()
+			}
+			if args[0] == "clearmeeting" {
+				flag := 1
+				clearmeetingCmd.Help()
+			}
+			if flag == 0 {
+				fmt.Println("Command input error")
 			}
 		}
-		util.UpdateMeeting(AllMeeting)
-		fmt.Println("meeting updated")
+		fmt.Println("help called")
 	},
 }
 
 func init() {
-	RootCmd.AddCommand(quitmeetingCmd)
-	quitmeetingCmd.PersistentFlags().StringVarP(&title, "title", "-t", "", "meeting title")
+	RootCmd.AddCommand(helpCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// quitmeetingCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// helpCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// quitmeetingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// helpCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
