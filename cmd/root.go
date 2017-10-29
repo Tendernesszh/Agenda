@@ -30,6 +30,10 @@ var cfgFile string
 
 // Flags
 var (
+	_username   string
+	_password   string
+	_email      string
+	_phone      string
 	_title      string
 	_members    []string
 	_member     string
