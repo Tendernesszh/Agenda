@@ -15,26 +15,32 @@
 package cmd
 
 import (
+	entity "github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
+
+var titleToBeRemoved string
 
 // removemeetingCmd represents the removemeeting command
 var removemeetingCmd = &cobra.Command{
 	Use:   "removemeeting",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `Remove a meeting created by the user.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		AllMeetings := entity.GetMeetings()
 
+		for i, meeting := range AllMeetings {
+			if CurUsername, _ := getCurUser(); meeting.Host == CurUsername && titleToBeRemoved == meeting.Title {
+				AllMeetings = append(AllMeetings[:i], AllMeetings[i+1:]...)
+			}
+		}
+		entity.UpdateMeeting(AllMeetings)
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(removemeetingCmd)
+	removemeetingCmd.PersistentFlags().StringVarP(&titleToBeRemoved, "title", "-t", "", "title of the meeting to be canceled")
 
 	// Here you will define your flags and configuration settings.
 
