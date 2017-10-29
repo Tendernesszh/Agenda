@@ -1,4 +1,4 @@
-// Copyright © 2017 HinanawiTenshi <dr.paper@live.com>
+// Copyright © 2017 Tendernesszh <dr.paper@live.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/Tendernesszh/Agenda/util"
 	"github.com/spf13/cobra"
 )
 
@@ -41,8 +41,8 @@ var createmeetingCmd = &cobra.Command{
 	Use:   "createmeeting",
 	Short: "Create a meeting whose host is the current user.",
 	Long: `Create a meeting with title, members, start time and end time.
-The members must be users that have registerred, and if any members, including
-you, is busy during the time, the meeting cannot be created.`,
+	The members must be users that have registerred, and if any members, including
+	you, is busy during the time, the meeting cannot be created.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()
