@@ -22,11 +22,13 @@ import (
 )
 
 func main() {
-	// Create data files if needed
-	os.MkdirAll("data", 0777)
-	os.OpenFile(entity.UserPath, os.O_CREATE, os.ModePerm)
-	os.OpenFile(entity.MeetingPath, os.O_CREATE, os.ModePerm)
-	os.OpenFile(cmd.CURUSER_PATH, os.O_CREATE, os.ModePerm)
-
 	cmd.Execute()
+}
+
+func init() {
+	// Create data files if needed
+	os.Mkdir("data", 0777)
+	os.OpenFile(entity.USER_PATH, os.O_CREATE, os.ModePerm)
+	os.OpenFile(entity.MEETING_PATH, os.O_CREATE, os.ModePerm)
+	os.OpenFile(cmd.CURUSER_PATH, os.O_CREATE, os.ModePerm)
 }

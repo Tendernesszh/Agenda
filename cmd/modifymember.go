@@ -24,7 +24,7 @@ import (
 
 // modifymemeberCmd represents the modifymemeber command
 var modifymemeberCmd = &cobra.Command{
-	Use:   "modifymemeber",
+	Use:   "modifymember",
 	Short: "Add or remove members from your meeting",
 	Long: `You can add or remove members corresponding to the meetings you
     created. You can not add a member to a meeting if the member is busy during
@@ -32,6 +32,11 @@ var modifymemeberCmd = &cobra.Command{
     will be removed too.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check for arguments
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()
 			return
@@ -42,7 +47,6 @@ var modifymemeberCmd = &cobra.Command{
 		}
 		meetings := entity.GetMeetings()
 		users := entity.GetUsers()
-		curUser, _ := getCurUser()
 		validTitle := false
 		for _, meeting := range meetings {
 			if meeting.Title == _title {
@@ -62,16 +66,10 @@ var modifymemeberCmd = &cobra.Command{
 		busy := make([]string, 0)
 		for _, member := range _members {
 			exist := false
-			duplicated := false
 			for _, user := range users {
 				if user.Username == member {
 					exist = true
 					break
-				}
-			}
-			for _, oldMember := range meeting.Members {
-				if oldMember.Username == member {
-					duplicated = true
 				}
 			}
 			st, _ := time.Parse(TIME_FORM, meeting.Starttime)
@@ -94,10 +92,6 @@ var modifymemeberCmd = &cobra.Command{
 				fmt.Println(argsError{unknownUser: member}.Error())
 				return
 			}
-			if duplicated {
-				fmt.Println(argsError{duplicatedUser: member}.Error())
-				return
-			}
 		}
 		if len(busy) != 0 {
 			fmt.Println(argsError{busyMembers: busy}.Error())
@@ -105,11 +99,17 @@ var modifymemeberCmd = &cobra.Command{
 		}
 
 		// Modified the members
-		for _, meeting := range meetings {
+		for i, meeting := range meetings {
 			if meeting.Title == _title {
 				if _addFlag {
 					for _, newMember := range _members {
-						meeting.Members = append(meeting.Members,
+						for _, oldMember := range meeting.Members {
+							if oldMember.Username == newMember {
+								fmt.Println(argsError{duplicatedUser: newMember}.Error())
+								return
+							}
+						}
+						meetings[i].Members = append(meeting.Members,
 							entity.SimpleUser{Username: newMember})
 					}
 				} else if _removeFlag {
@@ -125,8 +125,7 @@ var modifymemeberCmd = &cobra.Command{
 							newMembers = append(newMembers, oldMember)
 						}
 					}
-					meeting.Members = newMembers
-
+					meetings[i].Members = newMembers
 				}
 				entity.UpdateMeeting(meetings)
 				break
@@ -138,7 +137,7 @@ var modifymemeberCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(modifymemeberCmd)
 
-	modifymemeberCmd.Flags().BoolVarP(&_addFlag, "add", "a", true,
+	modifymemeberCmd.Flags().BoolVarP(&_addFlag, "add", "a", false,
 		"Add members to the meeting")
 	modifymemeberCmd.Flags().BoolVarP(&_removeFlag, "remove", "r", false,
 		"Remove members from the meeting")

@@ -23,14 +23,12 @@ import (
 // helpCmd represents the help command
 var helpCmd = &cobra.Command{
 	Use:   "help",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			RootCmd.Help()
+		}
 		if len(args) != 1 {
 			fmt.Println("Command input error")
 		} else if len(args) == 0 {
@@ -85,7 +83,6 @@ to quickly create a Cobra application.`,
 				fmt.Println("Command input error")
 			}
 		}
-		fmt.Println("help called")
 	},
 }
 

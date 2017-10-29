@@ -24,9 +24,9 @@ import (
 func init() {
 	RootCmd.AddCommand(loginCmd)
 	// Initialize the flags
-	registerCmd.Flags().StringVarP(&_username, "username", "u", "",
+	loginCmd.Flags().StringVarP(&_username, "username", "u", "",
 		"Specify the username.")
-	registerCmd.Flags().StringVarP(&_password, "password", "p",
+	loginCmd.Flags().StringVarP(&_password, "password", "p",
 		"", "Specify the password.")
 
 }

@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"time"
 
@@ -82,8 +83,7 @@ func (e argsError) Error() string {
 		result += fmt.Sprintf("[ERROR]Unknown user %v", e.unknownUser)
 	}
 	if len(e.busyMembers) > 0 {
-		busy := `[ERROR]The following members are busy during
-            the time\n`
+		busy := "[ERROR]The following members are busy during the time\n"
 		for busyMem := range e.busyMembers {
 			if busyMem == len(e.busyMembers)-1 {
 				busy += e.busyMembers[busyMem]
@@ -115,16 +115,18 @@ func timeIntervalCheck() error {
 }
 
 func getCurUser() (string, error) {
-	file, err := os.OpenFile(CURUSER_PATH, os.O_RDONLY, os.ModePerm)
+	name, err := ioutil.ReadFile(CURUSER_PATH)
 	if err != nil {
 		return "", err
 	}
-	name := make([]byte, 0)
-	file.Read(name)
 	return string(name), nil
 }
 
 func setCurUser(username string) error {
+	if username == "" {
+		os.Truncate(CURUSER_PATH, 0)
+		return nil
+	}
 	file, err := os.OpenFile(CURUSER_PATH, os.O_WRONLY, os.ModePerm)
 	if err != nil {
 		return err
@@ -136,16 +138,14 @@ func setCurUser(username string) error {
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "Agenda",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "A useful meetings management tool",
+	Long: `By using Agenda, you can create your own account and do easy
+meetings managements among your partners. Make sure they are all
+registerred here.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -159,15 +159,9 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.Agenda.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.

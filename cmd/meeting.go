@@ -29,8 +29,17 @@ var meetingCmd = &cobra.Command{
 	Long: `You can use this command to query all meetings of a specific time
     interval, including the meetings you held and you participated`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		meetings := entity.GetMeetings()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
-			cmd.Help()
+			fmt.Printf("Title\tStart time\tEnd time\tHost\tParticipants\n")
+			for _, meeting := range meetings {
+				entity.PrintOneMeeting(meeting)
+			}
 			return
 		}
 		if timeErr := timeIntervalCheck(); timeErr != nil {
@@ -39,8 +48,6 @@ var meetingCmd = &cobra.Command{
 		}
 		st, _ := time.Parse(TIME_FORM, _starttime)
 		et, _ := time.Parse(TIME_FORM, _endtime)
-		meetings := entity.GetMeetings()
-		curUser, _ := getCurUser()
 		noMeeting := true
 		for _, meeting := range meetings {
 			cSt, _ := time.Parse(TIME_FORM, meeting.Starttime)
@@ -53,6 +60,9 @@ var meetingCmd = &cobra.Command{
 				}
 				entity.PrintOneMeeting(meeting)
 			}
+		}
+		if noMeeting {
+			fmt.Println("No meetings here")
 		}
 	},
 }

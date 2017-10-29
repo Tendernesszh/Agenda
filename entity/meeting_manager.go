@@ -14,36 +14,15 @@ type Meeting struct {
 	Endtime   string       `json:"end_time"`
 }
 
-var (
-	MeetingPath string = "data/meetings.json"
-	meetingList []Meeting
-)
-
-func init() {
-	file, err := os.OpenFile(MeetingPath, os.O_RDONLY, os.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	jsonDecoder := json.NewDecoder(file)
-	for jsonDecoder.More() {
-		var curMeeting Meeting
-		err := jsonDecoder.Decode(&curMeeting)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		meetingList = append(meetingList, curMeeting)
-	}
-}
+const MEETING_PATH string = "data/meetings.json"
 
 func UpdateMeeting(meetings []Meeting) {
-	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	file, err := os.OpenFile(MEETING_PATH, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	os.Truncate(MeetingPath, 0)
+	os.Truncate(MEETING_PATH, 0)
 	defer file.Close()
 
 	jsonEncoder := json.NewEncoder(file)
@@ -58,7 +37,7 @@ func UpdateMeeting(meetings []Meeting) {
 }
 
 func AddOneMeeting(m Meeting) {
-	file, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	file, err := os.OpenFile(MEETING_PATH, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -72,10 +51,27 @@ func AddOneMeeting(m Meeting) {
 }
 
 func GetMeetings() []Meeting {
+	meetingList := make([]Meeting, 0)
+	file, err := os.OpenFile(MEETING_PATH, os.O_RDONLY, os.ModePerm)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	jsonDecoder := json.NewDecoder(file)
+	for jsonDecoder.More() {
+		var curMeeting Meeting
+		err := jsonDecoder.Decode(&curMeeting)
+		if err != nil {
+			fmt.Println(err)
+			return nil
+		}
+		meetingList = append(meetingList, curMeeting)
+	}
 	return meetingList
 }
 
 func GetMeeting(title string) Meeting {
+	meetingList := GetMeetings()
 	for _, meeting := range meetingList {
 		if meeting.Title == title {
 			return meeting

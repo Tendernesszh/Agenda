@@ -27,19 +27,24 @@ var clearmeetingCmd = &cobra.Command{
 	Short: "Remove all the meetings you host.",
 	Long:  `All the meetings that you created will be removed. Think twice.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		if len(args) != 0 {
 			fmt.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
 		meetings := entity.GetMeetings()
 		newMeetings := make([]entity.Meeting, 0)
-		curUser, _ := getCurUser()
 		for _, meeting := range meetings {
 			if !(meeting.Host == curUser) {
 				newMeetings = append(newMeetings, meeting)
 			}
 		}
 		entity.UpdateMeeting(newMeetings)
+		fmt.Println("All meetings have been removed.")
 	},
 }
 

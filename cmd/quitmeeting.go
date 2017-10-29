@@ -21,8 +21,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var title string
-
 // quitmeetingCmd represents the quitmeeting command
 var quitmeetingCmd = &cobra.Command{
 	Use:   "quitmeeting",
@@ -49,7 +47,7 @@ to quickly create a Cobra application.`,
 
 func init() {
 	RootCmd.AddCommand(quitmeetingCmd)
-	quitmeetingCmd.PersistentFlags().StringVarP(&title, "title", "-t", "", "meeting title")
+	quitmeetingCmd.Flags().StringVarP(&_title, "title", "t", "", "meeting title")
 
 	// Here you will define your flags and configuration settings.
 

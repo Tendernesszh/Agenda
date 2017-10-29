@@ -31,12 +31,12 @@ func init() {
 		"", "Specify the password of the user.")
 	registerCmd.Flags().StringVarP(&_email, "email", "e", "",
 		"Specify the email of the user")
-	registerCmd.Flags().StringVarP(&_phone, "phone", "ph", "",
+	registerCmd.Flags().StringVarP(&_phone, "phone", "P", "",
 		"Specify the phone of the user")
 }
 
 var registerCmd = &cobra.Command{
-	Use:   "Register",
+	Use:   "register",
 	Short: "Register a user account.",
 	Long:  `Register a user account with username, password, email and phone.`,
 

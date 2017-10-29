@@ -44,6 +44,11 @@ var createmeetingCmd = &cobra.Command{
 	The members must be users that have registerred, and if any members, including
 	you, is busy during the time, the meeting cannot be created.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()
 			return
@@ -56,7 +61,6 @@ var createmeetingCmd = &cobra.Command{
 		for i := range memberList {
 			memberList[i].Username = _members[i]
 		}
-		curUser, _ := getCurUser()
 		entity.AddOneMeeting(
 			entity.Meeting{Title: _title, Members: memberList, Host: curUser,
 				Starttime: _starttime, Endtime: _endtime})
