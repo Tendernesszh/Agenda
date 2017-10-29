@@ -53,19 +53,19 @@ func DeleteOneUser(username string) { //input the username of the user to be del
 			del = true
 		}
 		newMembers := make([]SimpleUser, 0)
-		delMember := false
 		for _, user := range meeting.Members {
+			delMember := false
 			if user.Username == username {
 				delMember = true
 				if len(meeting.Members) == 1 {
 					del = true
 				}
-				break
 			}
 			if !delMember {
 				newMembers = append(newMembers, user)
 			}
 		}
+		meeting.Members = newMembers
 		if !del {
 			newMeetings = append(newMeetings, meeting)
 		}

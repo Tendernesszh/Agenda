@@ -27,11 +27,22 @@ var quitmeetingCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long:  `quit the meeting current user particapated`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
+		if cmd.Flags().NFlag() != 1 {
+			fmt.Println(argsError{invalidNArgs: true}.Error())
+			return
+		}
 		AllMeeting := entity.GetMeetings()
-		for _, meeting := range AllMeeting {
-			for j, particapator := range meeting.Members {
-				if curUser, _ := getCurUser(); particapator.Username == curUser {
-					meeting.Members = append(meeting.Members[:j], meeting.Members[j+1:]...)
+		for i, meeting := range AllMeeting {
+			if meeting.Title == _title {
+				for j, particapator := range meeting.Members {
+					if curUser, _ := getCurUser(); particapator.Username == curUser {
+						AllMeeting[i].Members = append(meeting.Members[:j], meeting.Members[j+1:]...)
+					}
 				}
 			}
 		}

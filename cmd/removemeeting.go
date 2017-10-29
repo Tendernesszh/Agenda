@@ -15,11 +15,11 @@
 package cmd
 
 import (
-	entity "github.com/HinanawiTenshi/Agenda/entity"
+	"fmt"
+
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
-
-var titleToBeRemoved string
 
 // removemeetingCmd represents the removemeeting command
 var removemeetingCmd = &cobra.Command{
@@ -27,10 +27,19 @@ var removemeetingCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long:  `Remove a meeting created by the user.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		AllMeetings := entity.GetMeetings()
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 
+		AllMeetings := entity.GetMeetings()
 		for i, meeting := range AllMeetings {
-			if CurUsername, _ := getCurUser(); meeting.Host == CurUsername && titleToBeRemoved == meeting.Title {
+			if _title == meeting.Title {
+				if curUser != meeting.Host {
+					fmt.Println(argsError{permissionDeny: true}.Error())
+					return
+				}
 				AllMeetings = append(AllMeetings[:i], AllMeetings[i+1:]...)
 			}
 		}
@@ -40,7 +49,7 @@ var removemeetingCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(removemeetingCmd)
-	removemeetingCmd.PersistentFlags().StringVarP(&titleToBeRemoved, "title", "-t", "", "title of the meeting to be canceled")
+	removemeetingCmd.PersistentFlags().StringVarP(&_title, "title", "t", "", "title of the meeting to be canceled")
 
 	// Here you will define your flags and configuration settings.
 
