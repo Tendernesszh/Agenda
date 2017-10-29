@@ -26,18 +26,16 @@ func init() {
 	RootCmd.AddCommand(loginCmd)
 	// Initialize the flags
 	registerCmd.Flags().StringVarP(&_username, "username", "u", "",
-		"Specify the title of the meeting need to be created.")
+		"Specify the user.")
 	registerCmd.Flags().StringVarP(&_password, "password", "p",
-		make([]string, 0), "Specify the members to attend the meeting.")
+		make([]string, 0), "Specify the password.")
 
 }
 
 var loginCmd = &cobra.Command{
-	Use:   "createmeeting",
-	Short: "Create a meeting whose host is the current user.",
-	Long: `Create a meeting with title, members, start time and end time.
-The members must be users that have registerred, and if any members, including
-you, is busy during the time, the meeting cannot be created.`,
+	Use:   "login",
+	Short: "login account.",
+	Long: `login account. Please enter the correct password.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()

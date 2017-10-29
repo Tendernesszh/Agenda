@@ -52,7 +52,7 @@ var registerCmd = &cobra.Command{
 		}
 
 		util.AddOneUser(
-			util.Meeting{Username: _title, Password: memberList,
+			util.User{Username: _username, Password: _password,
       Email: _email, Phone: _phone})
 		fmt.Printf("[SUCCESS]User \"%v\" created\n", _username)
 	},
@@ -73,7 +73,6 @@ func userArgsCheck(cmd *cobra.Command) error {
 		for _, user := range users {
 			if user.Username == _username {
 				exist = true
-
 				break
 			}
 		}
