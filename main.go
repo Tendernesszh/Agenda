@@ -18,14 +18,14 @@ import (
 	"os"
 
 	"github.com/HinanawiTenshi/Agenda/cmd"
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 )
 
 func main() {
 	// Create data files if needed
 	os.MkdirAll("./data", 0777)
-	os.OpenFile(util.UserPath, os.O_CREATE, os.ModePerm)
-	os.OpenFile(util.MeetingPath, os.O_CREATE, os.ModePerm)
+	os.OpenFile(entity.UserPath, os.O_CREATE, os.ModePerm)
+	os.OpenFile(entity.MeetingPath, os.O_CREATE, os.ModePerm)
 	os.OpenFile(cmd.CURUSER_PATH, os.O_CREATE, os.ModePerm)
 
 	cmd.Execute()

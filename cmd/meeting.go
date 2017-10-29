@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +39,7 @@ var meetingCmd = &cobra.Command{
 		}
 		st, _ := time.Parse(TIME_FORM, _starttime)
 		et, _ := time.Parse(TIME_FORM, _endtime)
-		meetings := util.GetMeetings()
+		meetings := entity.GetMeetings()
 		curUser, _ := getCurUser()
 		noMeeting := true
 		for _, meeting := range meetings {
@@ -51,7 +51,7 @@ var meetingCmd = &cobra.Command{
 					fmt.Printf("Title\tStart time\tEnd time\tHost\tParticipants\n")
 					noMeeting = false
 				}
-				util.PrintOneMeeting(meeting)
+				entity.PrintOneMeeting(meeting)
 			}
 		}
 	},

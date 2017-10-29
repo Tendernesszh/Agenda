@@ -115,7 +115,7 @@ func getCurUser() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	name := make([]byte, 0, 255)
+	name := make([]byte, 0)
 	file.Read(name)
 	return string(name), nil
 }

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -40,8 +40,8 @@ var modifymemeberCmd = &cobra.Command{
 			fmt.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
-		meetings := util.GetMeetings()
-		users := util.GetUsers()
+		meetings := entity.GetMeetings()
+		users := entity.GetUsers()
 		curUser, _ := getCurUser()
 		validTitle := false
 		for _, meeting := range meetings {
@@ -54,7 +54,7 @@ var modifymemeberCmd = &cobra.Command{
 			fmt.Println(argsError{unknownTitle: _title}.Error())
 			return
 		}
-		meeting := util.GetMeeting(_title)
+		meeting := entity.GetMeeting(_title)
 		if meeting.Host != curUser {
 			fmt.Println(argsError{permissionDeny: true}.Error())
 			return
@@ -110,10 +110,10 @@ var modifymemeberCmd = &cobra.Command{
 				if _addFlag {
 					for _, newMember := range _members {
 						meeting.Members = append(meeting.Members,
-							util.SimpleUser{Username: newMember})
+							entity.SimpleUser{Username: newMember})
 					}
 				} else if _removeFlag {
-					newMembers := make([]util.SimpleUser, 0)
+					newMembers := make([]entity.SimpleUser, 0)
 					for _, oldMember := range meeting.Members {
 						needRemove := false
 						for _, rmMember := range _members {
@@ -128,7 +128,7 @@ var modifymemeberCmd = &cobra.Command{
 					meeting.Members = newMembers
 
 				}
-				util.UpdateMeeting(meetings)
+				entity.UpdateMeeting(meetings)
 				break
 			}
 		}

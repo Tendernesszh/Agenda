@@ -17,7 +17,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		AllMeeting := util.GetMeetings()
+		AllMeeting := entity.GetMeetings()
 		for _, meeting := range AllMeeting {
 			for j, particapator := range meeting.Members {
 				if curUser, _ := getCurUser(); particapator.Username == curUser {
@@ -42,7 +42,7 @@ to quickly create a Cobra application.`,
 				}
 			}
 		}
-		util.UpdateMeeting(AllMeeting)
+		entity.UpdateMeeting(AllMeeting)
 		fmt.Println("meeting updated")
 	},
 }

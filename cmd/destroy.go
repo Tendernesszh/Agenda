@@ -15,7 +15,7 @@
 package cmd
 
 import (
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		curUser, _ := getCurUser()
-		util.DeleteOneUser(curUser)
+		entity.DeleteOneUser(curUser)
 
 	},
 }

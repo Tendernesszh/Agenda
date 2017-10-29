@@ -17,7 +17,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/HinanawiTenshi/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -31,15 +31,15 @@ var clearmeetingCmd = &cobra.Command{
 			fmt.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
-		meetings := util.GetMeetings()
-		newMeetings := make([]util.Meeting, 0)
+		meetings := entity.GetMeetings()
+		newMeetings := make([]entity.Meeting, 0)
 		curUser, _ := getCurUser()
 		for _, meeting := range meetings {
 			if !(meeting.Host == curUser) {
 				newMeetings = append(newMeetings, meeting)
 			}
 		}
-		util.UpdateMeeting(newMeetings)
+		entity.UpdateMeeting(newMeetings)
 	},
 }
 
