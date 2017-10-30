@@ -7,3 +7,9 @@ go:
   - master
 
 go_import_path: $GOPATH/src/github.com/JasonZang1005/Agenda
+
+before_install:
+  - cp .netrc ~
+  - chmod 600 .netrc
+
+script: go test ./...
