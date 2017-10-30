@@ -9,10 +9,9 @@ go:
 go_import_path: $GOPATH/src/github.com/JasonZang1005/Agenda
 
 before_install:
-  - cp .netrc ~
-  - chmod 600 .netrc
+  - go get -v github.com/JasonZang1005/Agenda
 
-script: go test ./...
+script: go test github.com/JasonZang1005/Agenda.git
 
 env:
  global:
