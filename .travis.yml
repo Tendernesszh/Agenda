@@ -1,10 +1,7 @@
 language go
 
-go:
-  - 1.x
-  - 1.6
-  - 1.7.x
-  - master
+go: - 1.6.2
+
 
 go_import_path: $GOPATH/src/github.com/JasonZang1005/Agenda
 
