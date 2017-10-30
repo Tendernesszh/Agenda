@@ -13,3 +13,7 @@ before_install:
   - chmod 600 .netrc
 
 script: go test ./...
+
+env:
+ global:
+   - GH_REF: github.com/JasonZang1005/Agenda.git
