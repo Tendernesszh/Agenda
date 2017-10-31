@@ -30,10 +30,12 @@ var destroyCmd = &cobra.Command{
 		curUser, _ := getCurUser()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		logoutCmd.Run(logoutCmd, make([]string, 0))
 		entity.DeleteOneUser(curUser)
+		_infoLog.Printf("[" + curUser + "] Destroyed\n")
 	},
 }
 

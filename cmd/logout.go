@@ -25,7 +25,9 @@ var logoutCmd = &cobra.Command{
 	Long: `Current user logout. Make sure that all the operations
 	you want to do are done `,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
 		setCurUser("")
+		_infoLog.Printf("[" + curUser + "] Logout\n")
 	},
 }
 

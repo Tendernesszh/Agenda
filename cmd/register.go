@@ -47,6 +47,7 @@ var registerCmd = &cobra.Command{
 		}
 		if err := userArgsCheck(cmd); err != nil {
 			fmt.Println(err)
+			_errorLog.Println(err)
 			return
 		}
 
@@ -54,6 +55,7 @@ var registerCmd = &cobra.Command{
 			entity.User{Username: _username, Password: _password,
 				Email: _email, Phone: _phone})
 		fmt.Printf("[SUCCESS]User \"%v\" created\n", _username)
+		_infoLog.Printf("[%v] Registerred\n", _username)
 	},
 }
 

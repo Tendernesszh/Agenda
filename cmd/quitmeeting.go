@@ -30,17 +30,19 @@ var quitmeetingCmd = &cobra.Command{
 		curUser, _ := getCurUser()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		if cmd.Flags().NFlag() != 1 {
 			fmt.Println(argsError{invalidNArgs: true}.Error())
+			_errorLog.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
 		AllMeeting := entity.GetMeetings()
 		for i, meeting := range AllMeeting {
 			if meeting.Title == _title {
 				for j, particapator := range meeting.Members {
-					if curUser, _ := getCurUser(); particapator.Username == curUser {
+					if particapator.Username == curUser {
 						AllMeeting[i].Members = append(meeting.Members[:j], meeting.Members[j+1:]...)
 					}
 				}
@@ -48,6 +50,7 @@ var quitmeetingCmd = &cobra.Command{
 		}
 		entity.UpdateMeeting(AllMeeting)
 		fmt.Println("meeting updated")
+		_infoLog.Printf("[%v] Quit meeting \"%v\"", curUser, _title)
 	},
 }
 
