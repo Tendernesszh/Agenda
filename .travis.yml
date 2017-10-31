@@ -8,8 +8,6 @@ go_import_path: $GOPATH/src/github.com/JasonZang1005/Agenda
 before_install:
   - go get -v github.com/JasonZang1005/Agenda
 
-script: go test github.com/JasonZang1005/Agenda.git
-
 env:
  global:
    - GH_REF: github.com/JasonZang1005/Agenda.git
