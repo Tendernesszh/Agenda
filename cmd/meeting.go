@@ -33,6 +33,7 @@ var meetingCmd = &cobra.Command{
 		meetings := entity.GetMeetings()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
@@ -40,6 +41,7 @@ var meetingCmd = &cobra.Command{
 			for _, meeting := range meetings {
 				entity.PrintOneMeeting(meeting)
 			}
+			_infoLog.Printf("[" + curUser + "] Show all meetings\n")
 			return
 		}
 		if timeErr := timeIntervalCheck(); timeErr != nil {
@@ -64,6 +66,8 @@ var meetingCmd = &cobra.Command{
 		if noMeeting {
 			fmt.Println("No meetings here")
 		}
+		_infoLog.Printf("["+curUser+"] Show meetings within %v and %v\n",
+			_starttime, _endtime)
 	},
 }
 

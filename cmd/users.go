@@ -41,11 +41,18 @@ var usersCmd = &cobra.Command{
 	Short: "A brief description of your command.....",
 	Long:  `show all the users`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		userList := entity.GetUsers()
 		for _, user := range userList {
 			fmt.Println("Username: ", user.Username)
 			fmt.Println("Email: ", user.Email)
 			fmt.Println("Phone: ", user.Phone)
 		}
+		_infoLog.Printf("[%v] Show users\n", curUser)
 	},
 }

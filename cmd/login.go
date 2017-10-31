@@ -42,10 +42,12 @@ var loginCmd = &cobra.Command{
 		}
 		if err := userloginArgsCheck(cmd); err != nil {
 			fmt.Println(err)
+			_errorLog.Println(err)
 			return
 		}
 		setCurUser(_username)
 		fmt.Printf("[SUCCESS]User \"%v\" login\n", _username)
+		_infoLog.Printf("[" + _username + "] Login\n")
 	},
 }
 

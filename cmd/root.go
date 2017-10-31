@@ -17,6 +17,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"time"
 
@@ -44,8 +45,16 @@ var (
 	_removeFlag bool
 )
 
+// Logs
+var (
+	_infoLog  *log.Logger
+	_errorLog *log.Logger
+)
+
 // Current user's information(username)
 const CURUSER_PATH = "data/curUser.txt"
+
+const LOG_PATH = "data/log"
 
 // ERROR
 type argsError struct {
@@ -162,6 +171,10 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
+	logFile, _ := os.OpenFile(LOG_PATH,
+		os.O_WRONLY|os.O_APPEND|os.O_CREATE, os.ModePerm)
+	_infoLog = log.New(logFile, "[INFO] ", log.Ldate|log.Ltime)
+	_errorLog = log.New(logFile, "[ERROR] ", log.Ldate|log.Ltime)
 }
 
 // initConfig reads in config file and ENV variables if set.

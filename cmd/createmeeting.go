@@ -47,6 +47,7 @@ var createmeetingCmd = &cobra.Command{
 		curUser, _ := getCurUser()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
@@ -55,6 +56,7 @@ var createmeetingCmd = &cobra.Command{
 		}
 		if err := meetingArgsCheck(cmd); err != nil {
 			fmt.Println(err)
+			_errorLog.Println(err)
 			return
 		}
 		memberList := make([]entity.SimpleUser, len(_members))
@@ -65,6 +67,7 @@ var createmeetingCmd = &cobra.Command{
 			entity.Meeting{Title: _title, Members: memberList, Host: curUser,
 				Starttime: _starttime, Endtime: _endtime})
 		fmt.Printf("[SUCCESS]Meeting \"%v\" created\n", _title)
+		_infoLog.Printf("["+curUser+"] Meeting \"%v\" created\n", _title)
 	},
 }
 

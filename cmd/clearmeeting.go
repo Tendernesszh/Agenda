@@ -30,10 +30,12 @@ var clearmeetingCmd = &cobra.Command{
 		curUser, _ := getCurUser()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		if len(args) != 0 {
 			fmt.Println(argsError{invalidNArgs: true}.Error())
+			_errorLog.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
 		meetings := entity.GetMeetings()
@@ -45,6 +47,7 @@ var clearmeetingCmd = &cobra.Command{
 		}
 		entity.UpdateMeeting(newMeetings)
 		fmt.Println("All meetings have been removed.")
+		_infoLog.Printf("[" + curUser + "] All meetings have been removed\n")
 	},
 }
 

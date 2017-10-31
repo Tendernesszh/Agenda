@@ -35,6 +35,7 @@ var modifymemeberCmd = &cobra.Command{
 		curUser, _ := getCurUser()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
@@ -43,6 +44,7 @@ var modifymemeberCmd = &cobra.Command{
 		}
 		if cmd.Flags().NFlag() != 3 {
 			fmt.Println(argsError{invalidNArgs: true}.Error())
+			_errorLog.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
 		meetings := entity.GetMeetings()
@@ -56,11 +58,13 @@ var modifymemeberCmd = &cobra.Command{
 		}
 		if !validTitle {
 			fmt.Println(argsError{unknownTitle: _title}.Error())
+			_errorLog.Println(argsError{unknownTitle: _title}.Error())
 			return
 		}
 		meeting := entity.GetMeeting(_title)
 		if meeting.Host != curUser {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		busy := make([]string, 0)
@@ -90,11 +94,13 @@ var modifymemeberCmd = &cobra.Command{
 			}
 			if !exist {
 				fmt.Println(argsError{unknownUser: member}.Error())
+				_errorLog.Println(argsError{unknownUser: member}.Error())
 				return
 			}
 		}
 		if len(busy) != 0 {
 			fmt.Println(argsError{busyMembers: busy}.Error())
+			_errorLog.Println(argsError{busyMembers: busy}.Error())
 			return
 		}
 
@@ -106,6 +112,7 @@ var modifymemeberCmd = &cobra.Command{
 						for _, oldMember := range meeting.Members {
 							if oldMember.Username == newMember {
 								fmt.Println(argsError{duplicatedUser: newMember}.Error())
+								_errorLog.Println(argsError{duplicatedUser: newMember}.Error())
 								return
 							}
 						}
@@ -131,6 +138,7 @@ var modifymemeberCmd = &cobra.Command{
 				break
 			}
 		}
+		_infoLog.Println("["+curUser+"] Modify \"%v\"'s members\n", _title)
 	},
 }
 

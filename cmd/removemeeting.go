@@ -30,6 +30,7 @@ var removemeetingCmd = &cobra.Command{
 		curUser, _ := getCurUser()
 		if curUser == "" {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 
@@ -38,12 +39,14 @@ var removemeetingCmd = &cobra.Command{
 			if _title == meeting.Title {
 				if curUser != meeting.Host {
 					fmt.Println(argsError{permissionDeny: true}.Error())
+					_errorLog.Println(argsError{permissionDeny: true}.Error())
 					return
 				}
 				AllMeetings = append(AllMeetings[:i], AllMeetings[i+1:]...)
 			}
 		}
 		entity.UpdateMeeting(AllMeetings)
+		_infoLog.Printf("[%v] Remove meeting \"%v\"", curUser, _title)
 	},
 }
 
