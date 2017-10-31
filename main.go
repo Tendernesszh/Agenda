@@ -17,8 +17,8 @@ package main
 import (
 	"os"
 
-	"github.com/HinanawiTenshi/Agenda/cmd"
-	"github.com/HinanawiTenshi/Agenda/entity"
+	"github.com/JasonZang1005/Agenda/cmd"
+	"github.com/JasonZang1005/Agenda/entity"
 )
 
 func main() {
