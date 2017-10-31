@@ -18,7 +18,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Agenda/entity"
+
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
