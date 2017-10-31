@@ -15,6 +15,9 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -22,19 +25,34 @@ import (
 var removemeetingCmd = &cobra.Command{
 	Use:   "removemeeting",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `Remove a meeting created by the user.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 
+		AllMeetings := entity.GetMeetings()
+		for i, meeting := range AllMeetings {
+			if _title == meeting.Title {
+				if curUser != meeting.Host {
+					fmt.Println(argsError{permissionDeny: true}.Error())
+					_errorLog.Println(argsError{permissionDeny: true}.Error())
+					return
+				}
+				AllMeetings = append(AllMeetings[:i], AllMeetings[i+1:]...)
+			}
+		}
+		entity.UpdateMeeting(AllMeetings)
+		_infoLog.Printf("[%v] Remove meeting \"%v\"", curUser, _title)
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(removemeetingCmd)
+	removemeetingCmd.PersistentFlags().StringVarP(&_title, "title", "t", "", "title of the meeting to be canceled")
 
 	// Here you will define your flags and configuration settings.
 

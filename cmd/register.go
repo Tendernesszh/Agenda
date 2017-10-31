@@ -15,10 +15,9 @@
 package cmd
 
 import (
-  "fmt"
-	"time"
+	"fmt"
 
-	"github.com/Tendernesszh/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -29,17 +28,17 @@ func init() {
 	registerCmd.Flags().StringVarP(&_username, "username", "u", "",
 		"Specify the username need to be created.")
 	registerCmd.Flags().StringVarP(&_password, "password", "p",
-		make([]string, 0), "Specify the password of the user.")
-  registerCmd.Flags().StringVarP(&_email, "email", "e", "",
+		"", "Specify the password of the user.")
+	registerCmd.Flags().StringVarP(&_email, "email", "e", "",
 		"Specify the email of the user")
-	registerCmd.Flags().StringVarP(&_phone, "phone", "ph", "",
+	registerCmd.Flags().StringVarP(&_phone, "phone", "P", "",
 		"Specify the phone of the user")
 }
 
 var registerCmd = &cobra.Command{
-	Use:   "Register",
+	Use:   "register",
 	Short: "Register a user account.",
-	Long: `Register a user account with username, password, email and phone.`,
+	Long:  `Register a user account with username, password, email and phone.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
@@ -48,39 +47,38 @@ var registerCmd = &cobra.Command{
 		}
 		if err := userArgsCheck(cmd); err != nil {
 			fmt.Println(err)
+			_errorLog.Println(err)
 			return
 		}
 
-		util.AddOneUser(
-			util.User{Username: _username, Password: _password,
-      Email: _email, Phone: _phone})
+		entity.AddOneUser(
+			entity.User{Username: _username, Password: _password,
+				Email: _email, Phone: _phone})
 		fmt.Printf("[SUCCESS]User \"%v\" created\n", _username)
+		_infoLog.Printf("[%v] Registerred\n", _username)
 	},
 }
 
 func userArgsCheck(cmd *cobra.Command) error {
-	users := util.GetUsers()
-	//meetings := util.GetMeetings()
+	users := entity.GetUsers()
+	//meetings := entity.GetMeetings()
 
 	// Check for the number of arguments
 	if cmd.Flags().NFlag() != 4 {
 		return argsError{invalidNArgs: true}
 	}
 
-
 	// Check for members that haven't registerred yet.
-
-		for _, user := range users {
-			if user.Username == _username {
-				exist = true
-				break
-			}
+	exist := false
+	for _, user := range users {
+		if user.Username == _username {
+			exist = true
+			break
 		}
-		if exist {
-			return argsError{duplicatedUser: _username}
-		}
-
-
+	}
+	if exist {
+		return argsError{duplicatedUser: _username}
+	}
 
 	return nil
 }

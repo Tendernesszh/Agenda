@@ -1,4 +1,4 @@
-package util
+package entity
 
 import (
 	"encoding/json"
@@ -17,16 +17,14 @@ type SimpleUser struct {
 	Username string `json:"username"`
 }
 
-var (
-	UserPath string = "data/users.json"
-	userList []User
-)
+const USER_PATH string = "data/users.json"
 
-func init() {
-	file, err := os.OpenFile(UserPath, os.O_RDONLY, os.ModePerm)
+func GetUsers() []User {
+	userList := make([]User, 0)
+	file, err := os.OpenFile(USER_PATH, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return nil
 	}
 	jsonDecoder := json.NewDecoder(file)
 	for jsonDecoder.More() {
@@ -34,40 +32,47 @@ func init() {
 		err := jsonDecoder.Decode(&curUser)
 		if err != nil {
 			fmt.Println(err)
-			return
+			return nil
 		}
 		userList = append(userList, curUser)
 	}
-}
-
-func GetUsers() []User {
 	return userList
 }
 
 func DeleteOneUser(username string) { //input the username of the user to be deleted
-	Userfile, err := os.OpenFile(UserPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	Userfile, err := os.OpenFile(USER_PATH, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	AllMeetings := GetMeetings()
-	for meetingIndex, meeting := range AllMeetings {
-		for i, user := range meeting.Members {
+	newMeetings := make([]Meeting, 0)
+	for _, meeting := range AllMeetings {
+		del := false
+		if meeting.Host == username {
+			del = true
+		}
+		newMembers := make([]SimpleUser, 0)
+		for _, user := range meeting.Members {
+			delMember := false
 			if user.Username == username {
-				meeting.Members = append(meeting.Members[:i], meeting.Members[i+1:]...)
-				if len(meeting.Members) == 0 {
-					AllMeetings = append(AllMeetings[:meetingIndex], AllMeetings[meetingIndex+1:]...)
+				delMember = true
+				if len(meeting.Members) == 1 {
+					del = true
 				}
 			}
+			if !delMember {
+				newMembers = append(newMembers, user)
+			}
+		}
+		meeting.Members = newMembers
+		if !del {
+			newMeetings = append(newMeetings, meeting)
 		}
 	}
+	UpdateMeeting(newMeetings)
 
 	AllUser := GetUsers()
-	Meetingfile, err := os.OpenFile(MeetingPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
 
 	for i, user := range AllUser {
 		if user.Username == username {
@@ -75,6 +80,7 @@ func DeleteOneUser(username string) { //input the username of the user to be del
 			break
 		}
 	}
+	os.Truncate(USER_PATH, 0)
 	jsonEncoder := json.NewEncoder(Userfile)
 	for _, u := range AllUser {
 		encodeErr := jsonEncoder.Encode(&u)
@@ -83,20 +89,10 @@ func DeleteOneUser(username string) { //input the username of the user to be del
 			return
 		}
 	}
-	jsonEncoder = json.NewEncoder(Meetingfile)
-	for _, m := range AllMeetings {
-		encodeErr := jsonEncoder.Encode(&m)
-		if encodeErr != nil {
-			fmt.Println(encodeErr)
-			return
-		}
-	}
-	// TODO: call logout
-
 }
 func AddOneUser(u User) {
 	// Add one user to the json file.
-	file, err := os.OpenFile(UserPath, os.O_WRONLY|os.O_APPEND, os.ModePerm)
+	file, err := os.OpenFile(USER_PATH, os.O_WRONLY|os.O_APPEND, os.ModePerm)
 	if err != nil {
 		fmt.Println(err)
 		return

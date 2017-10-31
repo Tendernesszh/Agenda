@@ -15,27 +15,26 @@
 package cmd
 
 import (
-  "fmt"
-	"time"
+	"fmt"
 
-	"github.com/Tendernesszh/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	RootCmd.AddCommand(loginCmd)
 	// Initialize the flags
-	registerCmd.Flags().StringVarP(&_username, "username", "u", "",
-		"Specify the user.")
-	registerCmd.Flags().StringVarP(&_password, "password", "p",
-		make([]string, 0), "Specify the password.")
+	loginCmd.Flags().StringVarP(&_username, "username", "u", "",
+		"Specify the username.")
+	loginCmd.Flags().StringVarP(&_password, "password", "p",
+		"", "Specify the password.")
 
 }
 
 var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "login account.",
-	Long: `login account. Please enter the correct password.`,
+	Long:  `login account. Please enter the correct password.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()
@@ -43,43 +42,44 @@ var loginCmd = &cobra.Command{
 		}
 		if err := userloginArgsCheck(cmd); err != nil {
 			fmt.Println(err)
+			_errorLog.Println(err)
 			return
 		}
-    setCurUser(_username);
+		setCurUser(_username)
 		fmt.Printf("[SUCCESS]User \"%v\" login\n", _username)
+		_infoLog.Printf("[" + _username + "] Login\n")
 	},
 }
 
 func userloginArgsCheck(cmd *cobra.Command) error {
-	users := util.GetUsers()
-	//meetings := util.GetMeetings()
+	users := entity.GetUsers()
+	//meetings := entity.GetMeetings()
 
 	// Check for the number of arguments
 	if cmd.Flags().NFlag() != 2 {
 		return argsError{invalidNArgs: true}
 	}
 
-
 	// Check for members that haven't registerred yet.
-
-		for _, user := range users {
-			if user.Username == _username {
-				exist = true
-        if user.Password == _password
-        flag = true
+	flag := false
+	exist := false
+	for _, user := range users {
+		if user.Username == _username {
+			exist = true
+			if user.Password == _password {
+				flag = true
 				break
 			}
 		}
+	}
 
-    if !flag {
-      return argsError{permissionDeny: _username}
-    }
+	if !flag {
+		return argsError{permissionDeny: true}
+	}
 
-		if !exist {
-			return argsError{unknownUser: _username}
-		}
-
-
+	if !exist {
+		return argsError{unknownUser: _username}
+	}
 
 	return nil
 }

@@ -17,39 +17,46 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Tendernesszh/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
-
-var title string
 
 // quitmeetingCmd represents the quitmeeting command
 var quitmeetingCmd = &cobra.Command{
 	Use:   "quitmeeting",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `quit the meeting current user particapated`,
 	Run: func(cmd *cobra.Command, args []string) {
-		AllMeeting := util.GetMeetings()
-		for _, meeting := range AllMeeting {
-			for j, particapator := range meeting.Members {
-				if curUser, _ := getCurUser(); particapator.Username == curUser {
-					meeting.Members = append(meeting.Members[:j], meeting.Members[j+1:]...)
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
+		if cmd.Flags().NFlag() != 1 {
+			fmt.Println(argsError{invalidNArgs: true}.Error())
+			_errorLog.Println(argsError{invalidNArgs: true}.Error())
+			return
+		}
+		AllMeeting := entity.GetMeetings()
+		for i, meeting := range AllMeeting {
+			if meeting.Title == _title {
+				for j, particapator := range meeting.Members {
+					if particapator.Username == curUser {
+						AllMeeting[i].Members = append(meeting.Members[:j], meeting.Members[j+1:]...)
+					}
 				}
 			}
 		}
-		util.UpdateMeeting(AllMeeting)
+		entity.UpdateMeeting(AllMeeting)
 		fmt.Println("meeting updated")
+		_infoLog.Printf("[%v] Quit meeting \"%v\"", curUser, _title)
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(quitmeetingCmd)
-	quitmeetingCmd.PersistentFlags().StringVarP(&title, "title", "-t", "", "meeting title")
+	quitmeetingCmd.Flags().StringVarP(&_title, "title", "t", "", "meeting title")
 
 	// Here you will define your flags and configuration settings.
 

@@ -15,7 +15,9 @@
 package cmd
 
 import (
-	"github.com/Tendernesszh/Agenda/util"
+	"fmt"
+
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -23,16 +25,17 @@ import (
 var destroyCmd = &cobra.Command{
 	Use:   "destroy",
 	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long:  `delete current user`,
 	Run: func(cmd *cobra.Command, args []string) {
 		curUser, _ := getCurUser()
-		util.DeleteOneUser(curUser)
-
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
+		logoutCmd.Run(logoutCmd, make([]string, 0))
+		entity.DeleteOneUser(curUser)
+		_infoLog.Printf("[" + curUser + "] Destroyed\n")
 	},
 }
 

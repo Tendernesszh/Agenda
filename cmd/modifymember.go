@@ -18,13 +18,13 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Tendernesszh/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
 // modifymemeberCmd represents the modifymemeber command
 var modifymemeberCmd = &cobra.Command{
-	Use:   "modifymemeber",
+	Use:   "modifymember",
 	Short: "Add or remove members from your meeting",
 	Long: `You can add or remove members corresponding to the meetings you
     created. You can not add a member to a meeting if the member is busy during
@@ -32,17 +32,23 @@ var modifymemeberCmd = &cobra.Command{
     will be removed too.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Check for arguments
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()
 			return
 		}
 		if cmd.Flags().NFlag() != 3 {
 			fmt.Println(argsError{invalidNArgs: true}.Error())
+			_errorLog.Println(argsError{invalidNArgs: true}.Error())
 			return
 		}
-		meetings := util.GetMeetings()
-		users := util.GetUsers()
-		curUser, _ := getCurUser()
+		meetings := entity.GetMeetings()
+		users := entity.GetUsers()
 		validTitle := false
 		for _, meeting := range meetings {
 			if meeting.Title == _title {
@@ -52,26 +58,22 @@ var modifymemeberCmd = &cobra.Command{
 		}
 		if !validTitle {
 			fmt.Println(argsError{unknownTitle: _title}.Error())
+			_errorLog.Println(argsError{unknownTitle: _title}.Error())
 			return
 		}
-		meeting := util.GetMeeting(_title)
+		meeting := entity.GetMeeting(_title)
 		if meeting.Host != curUser {
 			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
 			return
 		}
 		busy := make([]string, 0)
 		for _, member := range _members {
 			exist := false
-			duplicated := false
 			for _, user := range users {
 				if user.Username == member {
 					exist = true
 					break
-				}
-			}
-			for _, oldMember := range meeting.Members {
-				if oldMember.Username == member {
-					duplicated = true
 				}
 			}
 			st, _ := time.Parse(TIME_FORM, meeting.Starttime)
@@ -92,28 +94,33 @@ var modifymemeberCmd = &cobra.Command{
 			}
 			if !exist {
 				fmt.Println(argsError{unknownUser: member}.Error())
-				return
-			}
-			if duplicated {
-				fmt.Println(argsError{duplicatedUser: member}.Error())
+				_errorLog.Println(argsError{unknownUser: member}.Error())
 				return
 			}
 		}
 		if len(busy) != 0 {
 			fmt.Println(argsError{busyMembers: busy}.Error())
+			_errorLog.Println(argsError{busyMembers: busy}.Error())
 			return
 		}
 
 		// Modified the members
-		for _, meeting := range meetings {
+		for i, meeting := range meetings {
 			if meeting.Title == _title {
 				if _addFlag {
 					for _, newMember := range _members {
-						meeting.Members = append(meeting.Members,
-							util.SimpleUser{Username: newMember})
+						for _, oldMember := range meeting.Members {
+							if oldMember.Username == newMember {
+								fmt.Println(argsError{duplicatedUser: newMember}.Error())
+								_errorLog.Println(argsError{duplicatedUser: newMember}.Error())
+								return
+							}
+						}
+						meetings[i].Members = append(meeting.Members,
+							entity.SimpleUser{Username: newMember})
 					}
 				} else if _removeFlag {
-					newMembers := make([]util.SimpleUser, 0)
+					newMembers := make([]entity.SimpleUser, 0)
 					for _, oldMember := range meeting.Members {
 						needRemove := false
 						for _, rmMember := range _members {
@@ -125,20 +132,20 @@ var modifymemeberCmd = &cobra.Command{
 							newMembers = append(newMembers, oldMember)
 						}
 					}
-					meeting.Members = newMembers
-
+					meetings[i].Members = newMembers
 				}
-				util.UpdateMeeting(meetings)
+				entity.UpdateMeeting(meetings)
 				break
 			}
 		}
+		_infoLog.Println("["+curUser+"] Modify \"%v\"'s members\n", _title)
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(modifymemeberCmd)
 
-	modifymemeberCmd.Flags().BoolVarP(&_addFlag, "add", "a", true,
+	modifymemeberCmd.Flags().BoolVarP(&_addFlag, "add", "a", false,
 		"Add members to the meeting")
 	modifymemeberCmd.Flags().BoolVarP(&_removeFlag, "remove", "r", false,
 		"Remove members from the meeting")

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Tendernesszh/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -44,29 +44,36 @@ var createmeetingCmd = &cobra.Command{
 	The members must be users that have registerred, and if any members, including
 	you, is busy during the time, the meeting cannot be created.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
 		if cmd.Flags().NFlag() == 0 && len(args) == 0 {
 			cmd.Help()
 			return
 		}
 		if err := meetingArgsCheck(cmd); err != nil {
 			fmt.Println(err)
+			_errorLog.Println(err)
 			return
 		}
-		memberList := make([]util.SimpleUser, len(_members))
+		memberList := make([]entity.SimpleUser, len(_members))
 		for i := range memberList {
 			memberList[i].Username = _members[i]
 		}
-		curUser, _ := getCurUser()
-		util.AddOneMeeting(
-			util.Meeting{Title: _title, Members: memberList, Host: curUser,
+		entity.AddOneMeeting(
+			entity.Meeting{Title: _title, Members: memberList, Host: curUser,
 				Starttime: _starttime, Endtime: _endtime})
 		fmt.Printf("[SUCCESS]Meeting \"%v\" created\n", _title)
+		_infoLog.Printf("["+curUser+"] Meeting \"%v\" created\n", _title)
 	},
 }
 
 func meetingArgsCheck(cmd *cobra.Command) error {
-	users := util.GetUsers()
-	meetings := util.GetMeetings()
+	users := entity.GetUsers()
+	meetings := entity.GetMeetings()
 
 	// Check for the number of arguments
 	if cmd.Flags().NFlag() != 4 {

@@ -17,7 +17,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/Tendernesszh/Agenda/util"
+	"github.com/HinanawiTenshi/Agenda/entity"
 	"github.com/spf13/cobra"
 )
 
@@ -46,11 +46,18 @@ var usersCmd = &cobra.Command{
 				This application is a tool to generate the needed files
 				to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		userList := util.GetUsers()
+		curUser, _ := getCurUser()
+		if curUser == "" {
+			fmt.Println(argsError{permissionDeny: true}.Error())
+			_errorLog.Println(argsError{permissionDeny: true}.Error())
+			return
+		}
+		userList := entity.GetUsers()
 		for _, user := range userList {
 			fmt.Println("Username: ", user.Username)
 			fmt.Println("Email: ", user.Email)
 			fmt.Println("Phone: ", user.Phone)
 		}
+		_infoLog.Printf("[%v] Show users\n", curUser)
 	},
 }
